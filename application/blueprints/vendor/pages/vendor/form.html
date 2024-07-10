@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "macros_simple_form.html" import text_box, text_area, save_button %}
+
+{% block title %}{{ app_label }}{% endblock %}
+
+{% block content %}
+<div class="container p-5">
+    {% if form.id %}
+    <h1 class="mb-4">Edit {{ app_label }}</h1>
+    <form action="{{ url.edit }}" method="post">
+        <input type="number" name="record_id" value="{{ form.id }}" hidden>
+        {% else %}
+    <h1 class="mb-4">Add {{ app_label }}</h1>
+    <form action="{{ url.add }}" method="post">
+        {% endif %}
+    
+        {{ text_box(form, "Registered Name", "vendor_name", form.vendor_name, autofocus=False) }}
+        {{ text_box(form, "Tax Identification Number", "tin", form.tin, autofocus=False) }}
+        {{ text_box(form, "Address", "address", form.address, autofocus=False) }}
+
+        {{  save_button() }}
+
+    </form>
+</div>
+{% endblock %}
+
+vendor_name = db.Column(db.String(255))
+registered_name = db.Column(db.String(255))
+tin = db.Column(db.String(255))
+business_style = db.Column(db.String(255))
+address = db.Column(db.String(255))

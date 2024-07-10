@@ -158,6 +158,10 @@ class Url:
         return url_for(f"{self.object.__tablename__}.unlock", record_id=self.object.id)
     
     @property
+    def approve(self):
+        return url_for(f"{self.object.__tablename__}.approve", record_id=self.object.id)
+    
+    @property
     def print(self):
         return url_for(f"{self.object.__tablename__}.print", record_id=self.object.id)
     
