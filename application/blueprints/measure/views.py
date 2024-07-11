@@ -1,9 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, g
 import json
 from sqlalchemy.exc import IntegrityError
-from .models import Vendor as Obj
-from .models import UserVendor as Preparer
-from .models import AdminVendor as Approver
+from .models import Measure as Obj
+from .models import AdminMeasure as Approver
 from .forms import Form
 from application.extensions import db, Url
 from application.blueprints.user import login_required, roles_accepted

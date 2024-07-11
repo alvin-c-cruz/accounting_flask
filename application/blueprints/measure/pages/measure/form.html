@@ -1,25 +1,25 @@
 {% extends "base.html" %}
 {% from "macros_simple_form.html" import text_box, text_area, save_button %}
 
-{% block title %}Account{% endblock %}
+{% block title %}{{ app_label }}{% endblock %}
 
 {% block content %}
 <div class="container p-5">
     {% if form.id %}
-    <h1 class="mb-4">Edit Account</h1>
+    <h1 class="mb-4">Edit {{ app_label }}</h1>
     <form action="{{ url.edit }}" method="post">
         <input type="number" name="record_id" value="{{ form.id }}" hidden>
         {% else %}
-    <h1 class="mb-4">Add Account</h1>
+    <h1 class="mb-4">Add {{ app_label }}</h1>
     <form action="{{ url.add }}" method="post">
         {% endif %}
     
-        {{ text_box(form, "Account Number", "account_number", form.account_number, autofocus=True) }}
-        {{ text_box(form, "Account Title", "account_name", form.account_name, autofocus=False) }}
+        {{ text_box(form, "Description", "measure_name", form.measure_name, autofocus=True) }}
 
         {{  save_button() }}
 
     </form>
 </div>
 {% endblock %}
+
 

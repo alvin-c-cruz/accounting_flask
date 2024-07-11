@@ -1,0 +1,5 @@
+{% if ("Item" in current_user.user_roles) %}
+<li>
+  <a class="dropdown-item" href="{{ url_for('item.home') }}">Items</a>
+</li>
+{% endif %}

@@ -14,7 +14,7 @@
     <form action="{{ url.add }}" method="post">
         {% endif %}
     
-        {{ text_box(form, "Registered Name", "vendor_name", form.vendor_name, autofocus=False) }}
+        {{ text_box(form, "Registered Name", "vendor_name", form.vendor_name, autofocus=True) }}
         {{ text_box(form, "Tax Identification Number", "tin", form.tin, autofocus=False) }}
         {{ text_box(form, "Address", "address", form.address, autofocus=False) }}
 
@@ -23,9 +23,3 @@
     </form>
 </div>
 {% endblock %}
-
-vendor_name = db.Column(db.String(255))
-registered_name = db.Column(db.String(255))
-tin = db.Column(db.String(255))
-business_style = db.Column(db.String(255))
-address = db.Column(db.String(255))
