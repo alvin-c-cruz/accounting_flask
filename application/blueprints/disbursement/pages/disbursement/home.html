@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Raw Material Request{% endblock %}
+{% block title %}{{ app_label }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="text-danger">Raw Material Request</h1>
-    <a href="{{ url_for('raw_material_request.add') }}" class="btn btn-success mb-3">Add Raw Material Request</a>
+    <h1 class="text-danger">{{ app_label }}</h1>
+    <a href="{{ url.add }}" class="btn btn-success mb-3">Add {{ app_label }}</a>
 
-    <form method="post" action="{{ url_for('raw_material_request.home') }}" class="mb-3">
+    <form method="post" action="{{ url.home }}" class="mb-3">
         <div class="form row">
             <div class="col-md-4">
                 <label for="date_from">Date From:</label>
@@ -30,9 +30,9 @@
                     <thead class="thead-light">
                         <tr>
                             <th>Date</th>
-                            <th>Request No.</th>
-                            <th>Notes</th>
-                            <th>Status</th>
+                            <th>CD No.</th>
+                            <th>Check No.</th>
+                            <th>Amount</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -40,8 +40,9 @@
                         {% for row in rows %}
                         <tr>
                             <td>{{ row.formatted_record_date }}</td>
-                            <td>{{ row.raw_material_request_number }}</td>
-                            <td>{{ row.notes }}</td>
+                            <td>{{ row.disbursement_number }}</td>
+                            <td>{{ row.check_number }}</td>
+                            <td>{{ row.formatted_amount }}</td>
                             <td>
                                 {% if row.cancelled %}
                                 <p style="color: red;">Cancelled {{ row.formatted_cancelled }}</p>
@@ -55,23 +56,22 @@
                             </td>
                             <td>
                                 {% if row.submitted or row.cancelled %}
-                                    <a href="{{ url_for('raw_material_request.view', record_id=row.id) }}"
+                                    <a href="{{ url.view }}"
                                     class="btn btn-warning btn-sm">View</a>
                                     {% if current_user.admin %}
-                                    <a href="{{ url_for('raw_material_request.unlock', record_id=row.id) }}"
+                                    <a href="{{ url.unlock }}"
                                     class="btn btn-danger btn-sm"
                                     onclick="return confirmMessage('Type YES to unlock this record.')">Unlock</a>
                                     {% endif %}
                                 {% else %}
-                                    <a href="{{ url_for('raw_material_request.edit', record_id=row.id) }}"
+                                    <a href="{{ url.edit }}"
                                     class="btn btn-warning btn-sm">Edit</a>
-                                    <a href="{{ url_for('raw_material_request.cancel', record_id=row.id) }}"
+                                    <a href="{{ url.cancel }}"
                                     class="btn btn-danger btn-sm"
                                     onclick="return confirmMessage('Type YES to cancel this record.')">Cancel</a>
-                                    
                                 {% endif %}
                                 {% if current_user.admin %}
-                                <a href="{{ url_for('raw_material_request.delete', record_id=row.id) }}"
+                                <a href="{{ url.delete }}"
                                 class="btn btn-danger btn-sm"
                                 onclick="return confirmMessage('Type YES to Delete this record.')">Delete</a>
                                 {% endif %}
@@ -80,7 +80,7 @@
                         {% endfor %}
                         {% if rows|length == 0 %}
                         <tr>
-                            <td colspan="5" class="text-center">No records found.</td>
+                            <td colspan="6" class="text-center">No records found.</td>
                         </tr>
                         {% endif %}
                     </tbody>

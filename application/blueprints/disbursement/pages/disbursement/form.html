@@ -2,7 +2,7 @@
 {% from "macros_form_header.html" import date_box, text_box, select_box %}
 {% from "macros_form_detail.html" import detail_primary_key, detail_number_float, detail_select_box, detail_textbox %}
 
-{% block title %}Raw Material Request{% endblock %}
+{% block title %}{{ app_label }}{% endblock %}
 
 {% block styles %}
 <style>
@@ -14,32 +14,6 @@
     .table th, .table td {
         white-space: nowrap; /* Prevent line breaks in table cells */
     }
-
-    th:nth-child(1),
-    td:nth-child(1) {
-        width: 10%; /* Quantity */
-    }
-
-    th:nth-child(2),
-    td:nth-child(2) {
-        width: 10%; /* Measure */
-    }
-
-    th:nth-child(3),
-    td:nth-child(3) {
-        width: 25%; /* Description */
-    }
-
-    th:nth-child(4),
-    td:nth-child(4) {
-        width: 10%; /* Date Needed */
-    }
-
-    th:nth-child(5),
-    td:nth-child(5) {
-        width: 20%; /* Side Note */
-    }
-
 
     input[type=number] {
         text-align: right; 
@@ -59,15 +33,15 @@
 <div class="container p-5">
     {% if form.id %}
         {% if form.submitted or form.cancelled %}
-        <h1 class="mb-4"><span style="color:red;">Locked</span> Raw Material Request</h1>
+        <h1 class="mb-4"><span style="color:red;">Locked</span> {{ app_label }}</h1>
         {% else %}   
-        <h1 class="mb-4">Edit Raw Material Request</h1>
+        <h1 class="mb-4">Edit {{ app_label }}</h1>
         {% endif %}
-        <form action="{{ url_for('raw_material_request.edit', record_id=form.id) }}" method="post">
-            <input type="number" name="raw_material_request_id" value="{{ form.id }}" hidden>
+        <form action="{{ url.edit }}" method="post">
+            <input type="number" name="record_id" value="{{ form.id }}" hidden>
     {% else %}
-        <h1 class="mb-4">New Raw Material Request</h1>
-        <form action="{{ url_for('raw_material_request.add') }}" method="post">
+        <h1 class="mb-4">New {{ app_label }}</h1>
+        <form action="{{ url.add }}" method="post">
     {% endif %}
     <hr>
     <div class="row mb-2">
@@ -91,7 +65,7 @@
                 <div class="col-4">
                     {% if form.id %}
                         {% if form.submitted or form.cancelled %}
-                    <a href="{{ url_for('raw_material_request.print', record_id=form.id) }}" 
+                    <a href="{{ url.print }}" 
                         class="btn btn-secondary form-control" 
                         target="_blank">Print</a>
                         {% else %}
@@ -103,9 +77,9 @@
                 </div>
                 <div class="col-4">
                     {% if not form.cancelled and form.id %}
-                    <a href="{{ url_for('raw_material_request.cancel', record_id=form.id) }}" 
+                    <a href="{{ url.cancel }}" 
                         class="btn btn-danger form-control" 
-                        onclick="return confirmMessage('Type YES to cancel this record.');">Cancel Request</a>
+                        onclick="return confirmMessage('Type YES to cancel this record.');">Cancel</a>
                     {% endif %}
                 </div>
             </div>
@@ -116,7 +90,12 @@
     
     <div class="row mb-2">
         {{ date_box(form, "Date", "record_date", form.record_date, autofocus=True) }}
-        {{ text_box(form, "Raw Material Request No.", "raw_material_request_number", form.raw_material_request_number, autofocus=False) }}
+        {{ text_box(form, "CD No.", "disbursement_number", form.disbursement_number, autofocus=False) }}
+    </div>
+
+    <div class="row mb-2">
+        {{ text_box(form, "Check No.", "check_number", form.check_number, autofocus=False) }}
+        {{ select_box(form, "Cash Account", "cash_id", form.cash_id, cash_options, autofocus=False) }}
     </div>
 
     <div class="row mb-2">
@@ -126,38 +105,52 @@
     <table class="table table-striped table-light">
             <thead>
                 <tr>
-                    <th>Quantity</th>
-                    <th>Measure</th>
-                    <th>Description</th>
-                    <th>Side Note</th>
+                    <th>Payee Name</th>
+                    <th>Invalid</th>
+                    <th>Wages</th>
+                    <th>VAT Exempted</th>
+                    <th>VAT Zero-Rated</th>
+                    <th>VAT 12%</th>
+                    <th>VT</th>
+                    <th>WT</th>
+                    <th>Account Title</th>
                 </tr>
             </thead>
             <tbody>                
                 {% for i, form_detail in form.details %}
                 <tr>
                     <td>
-                        {{ detail_primary_key(i, form_detail, "raw_material_request_detail_id", form_detail.id) }}
-                        {{ detail_number_float(i, form, form_detail, "quantity", form_detail.quantity) }}
+                        {{ detail_primary_key(i, form_detail, "disbursement_id", form_detail.id) }}
+                        {{ detail_select_box(i, form, form_detail, "vendor_id", form_detail.vendor_id, vendor_options) }}
                     </td>
                     <td>
-                        {{ detail_select_box(i, form, form_detail, "measure_id", form_detail.measure_id, measure_dropdown, autofocus=False) }}
+                        {{ detail_number_float(i, form, form_detail, "invalid", form_detail.invalid) }}
                     </td>
                     <td>
-                        {{ detail_select_box(i, form, form_detail, "raw_material_id", form_detail.raw_material_id, raw_material_dropdown, autofocus=False) }}
+                        {{ detail_number_float(i, form, form_detail, "wages", form_detail.wages) }}
                     </td>
                     <td>
-                        {{ detail_textbox(i, form, form_detail, "side_note", form_detail.side_note) }}
+                        {{ detail_number_float(i, form, form_detail, "exempted", form_detail.exempted) }}
+                    </td>
+                    <td>
+                        {{ detail_number_float(i, form, form_detail, "zero_rated", form_detail.zero_rated) }}
+                    </td>
+                    <td>
+                        {{ detail_number_float(i, form, form_detail, "vat_registered", form_detail.vat_registered) }}
+                    </td>
+                    <td>
+                        {{ detail_select_box(i, form, form_detail, "vat_id", form_detail.vat_id, vat_options) }}
+                    </td>
+                    <td>
+                        {{ detail_select_box(i, form, form_detail, "wtax_id", form_detail.wtax_id, wtax_options) }}
+                    </td>
+                    <td>
+                        {{ detail_select_box(i, form, form_detail, "account_id", form_detail.account_id, account_options) }}
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <datalist id="so_numbers">
-            <option></option>
-            {% for so_number in so_numbers %}
-            <option value="{{ so_number }}"></option>
-            {% endfor %}
-        </datalist>    
     </form>
 
     <script>
