@@ -2,11 +2,13 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import current_user
 import datetime
 from sqlalchemy.exc import IntegrityError
-from .models import RawMaterialRequest as Obj
-from .models import  RawMaterialRequestDetail as ObjDetail
+from .models import Disbursement as Obj
+from .models import  DisbursementDetail as ObjDetail
 from .forms import Form
-from .. raw_material import RawMaterial
-from .. measure import Measure
+from .. account import Account
+from .. vendor import Vendor
+from .. vat import Vat
+from .. wtax import Wtax
 from application.extensions import db, month_first_day, month_last_day, next_control_number
 from .. user import login_required, roles_accepted
 from . import app_name, app_label
@@ -37,6 +39,8 @@ def home():
         "rows": rows,
         "date_from": date_from,
         "date_to": date_to,
+        "app_name": app_name, 
+        "app_label": app_label,
     }
 
     return render_template(f"{app_name}/home.html", **context)
@@ -46,8 +50,10 @@ def home():
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def add():
-    raw_material_dropdown = [{"id": record.id, "dropdown_name": f"{record.raw_material_name} ({record.raw_material_code})"} for record in RawMaterial.query.order_by('raw_material_name').all() if record.active]
-    measure_dropdown = [{"id": record.id, "dropdown_name": record.measure_name} for record in Measure.query.order_by('measure_name').all()]
+    account_dropdown = Account().options()
+    vendor_dropdown = Vendor().options()
+    vat_dropdown = Vat().options()
+    wtax_dropdown = Wtax().options()
 
     if request.method == "POST":
         form = Form()
@@ -58,7 +64,6 @@ def add():
             form._save()
             flash(f"{getattr(form, f'{app_name}_number')} has been added.", category="success")
             return redirect(url_for(f'{app_name}.edit', record_id=form.id))
-
     else:
         form = Form()
         today = str(datetime.date.today())[:10]
@@ -74,8 +79,10 @@ def add():
 
     context = {
         "form": form,
-        "raw_material_dropdown": raw_material_dropdown,
-        "measure_dropdown": measure_dropdown,
+        "account_dropdown": account_dropdown,
+        "vendor_dropdown": vendor_dropdown,
+        "vat_dropdown": vat_dropdown,
+        "wtax_dropdown": wtax_dropdown,
     }
 
     return render_template(f"{app_name}/form.html", **context)
@@ -85,8 +92,10 @@ def add():
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def edit(record_id):   
-    raw_material_dropdown = [{"id": record.id, "dropdown_name": f"{record.raw_material_name} ({record.raw_material_code})"} for record in RawMaterial.query.order_by('raw_material_name').all() if record.active]
-    measure_dropdown = [{"id": record.id, "dropdown_name": record.measure_name} for record in Measure.query.order_by('measure_name').all()]
+    account_dropdown = Account().options()
+    vendor_dropdown = Vendor().options()
+    vat_dropdown = Vat().options()
+    wtax_dropdown = Wtax().options()
 
     record = Obj.query.get_or_404(record_id)
 
@@ -115,8 +124,10 @@ def edit(record_id):
 
     context = {
         "form": form,
-        "raw_material_dropdown": raw_material_dropdown,
-        "measure_dropdown": measure_dropdown,
+        "account_dropdown": account_dropdown,
+        "vendor_dropdown": vendor_dropdown,
+        "vat_dropdown": vat_dropdown,
+        "wtax_dropdown": wtax_dropdown,
     }
 
     return render_template(f"{app_name}/form.html", **context)
@@ -126,8 +137,10 @@ def edit(record_id):
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def view(record_id):   
-    raw_material_dropdown = [{"id": record.id, "dropdown_name": f"{record.raw_material_name} ({record.raw_material_code})"} for record in RawMaterial.query.order_by('raw_material_name').all() if record.active]
-    measure_dropdown = [{"id": record.id, "dropdown_name": record.measure_name} for record in Measure.query.order_by('measure_name').all()]
+    account_dropdown = Account().options()
+    vendor_dropdown = Vendor().options()
+    vat_dropdown = Vat().options()
+    wtax_dropdown = Wtax().options()
 
     record = Obj.query.get_or_404(record_id)
 
@@ -139,8 +152,10 @@ def view(record_id):
 
     context = {
         "form": form,
-        "raw_material_dropdown": raw_material_dropdown,
-        "measure_dropdown": measure_dropdown,
+        "account_dropdown": account_dropdown,
+        "vendor_dropdown": vendor_dropdown,
+        "vat_dropdown": vat_dropdown,
+        "wtax_dropdown": wtax_dropdown,
     }
 
     return render_template(f"{app_name}/form.html", **context)

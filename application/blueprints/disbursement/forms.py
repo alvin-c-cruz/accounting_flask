@@ -5,11 +5,16 @@ from .models import RawMaterialRequest as Obj
 from .models import RawMaterialRequestDetail as ObjDetail
 from .models import UserRawMaterialRequest as Preparer
 from datetime import datetime
-from . import app_name, model_name
+from . import app_name
 
+HEADER_INTEGER_FIELDS = ["cash_id", "check_name_id"]
+HEADER_FLOAT_FIELDS = []
+
+DETAIL_INTEGER_FIELDS = ["vendor_id", "vat_id", "wtax_id", "account_id"]
+DETAIL_FLOAT_FIELDS = ["not_applicable", "exempted", "zero_rated", "vat_registered"]
 
 DETAIL_ROWS = 10
-    
+
 
 def get_attributes(object):
     attributes = [x for x in dir(object) if (not x.startswith("_"))]
@@ -39,11 +44,15 @@ def get_attributes_as_dict(object):
 @dataclass
 class SubForm:
     id: int = 0
-    raw_material_request_id:int = 0
-    quantity: float = 0
-    measure_id: int = 0
-    raw_material_id: int = 0
-    side_note: str = ""
+    vendor_id:int = 0
+    reference: str = ""
+    not_applicable: float = 0
+    exempted: float = 0
+    zero_rated: float = 0
+    vat_registered: float = 0
+    vat_id: int = 0
+    wtax_id: int = 0
+    account_id: int = 0
 
     errors = {}
 
@@ -55,14 +64,11 @@ class SubForm:
         self.errors = {}
 
         if self._is_dirty():            
-            if self.quantity <= 0:
-                self.errors["quantity"] = "Quantity should be greater than zero (0)."
+            if not self.vendor_id:
+                self.errors["vendor_id"] = "Please select vendor."
 
-            if not self.measure_id:
-                self.errors["measure_id"] = "Please select measure."
-
-            if not self.raw_material_id:
-                self.errors["raw_material_id"] = "Please select description."
+            if not self.account_id:
+                self.errors["account_id"] = "Please select account."
                                 
         if not self.errors:
             return True
@@ -70,15 +76,17 @@ class SubForm:
             return False    
 
     def _is_dirty(self):
-        return any([self.quantity, self.measure_id, self.raw_material_id, self.side_note])    
+        return any(get_attributes(self))    
         
 
 @dataclass
 class Form:
     id: int = None
     record_date: str = ""
-    raw_material_request_number: str = ""
-    notes: str = ""
+    cash_id: int = 0
+    disbursement_number: str = ""
+    check_number: str = ""
+    check_name_id: int = 0
     submitted: str = ""
     cancelled: str = ""
 
@@ -139,12 +147,11 @@ class Form:
                 for i, detail in self.details:
                     if detail._is_dirty():
                         _dict = {
-                            f"{app_name}_id": record.id,
-                            "quantity": detail.quantity,
-                            "measure_id": detail.measure_id,
-                            "raw_material_id": detail.raw_material_id,
-                            "side_note": detail.side_note
+                            attribute: getattr(detail, attribute)
+                            for attribute in get_attributes(SubForm)
                         }
+
+                        _dict[f"{app_name}_id"] = record.id
                         row_detail = ObjDetail(**_dict)
                         db.session.add(row_detail)
                 
@@ -176,19 +183,13 @@ class Form:
                 setattr(self, attribute, getattr(request_form, "get")(attribute))
 
         for i in range(DETAIL_ROWS):
-            if type(request_form.get(f'quantity-{i}')) == str:
-                quantity_value = request_form.get(f'quantity-{i}')
-                if quantity_value.isnumeric() or (quantity_value.replace('.', '', 1).isdigit() and quantity_value.count('.') <= 1):
-                    self.details[i][1].quantity = float(quantity_value)
+            for attribute in get_attributes(SubForm):
+                if attribute in DETAIL_FLOAT_FIELDS:
+                    setattr(self.details[i][1], attribute, float(request_form.get(f'{attribute}-{i}')))
+                elif attribute in DETAIL_INTEGER_FIELDS:
+                    setattr(self.details[i][1], attribute, int(request_form.get(f'{attribute}-{i}')))
                 else:
-                    self.details[i][1].quantity = 0
-            else: 
-                self.details[i][1].quantity = float(request_form.get(f'quantity-{i}'))
-
-            self.details[i][1].measure_id = int(request_form.get(f'measure_id-{i}'))
-
-            self.details[i][1].raw_material_id = int(request_form.get(f'raw_material_id-{i}'))
-            self.details[i][1].side_note = request_form.get(f'side_note-{i}')
+                    setattr(self.details[i][1], attribute, request_form.get(f'{attribute}-{i}'))
 
     def _validate_on_submit(self):
         self.errors = {}
@@ -197,17 +198,35 @@ class Form:
         if not self.record_date:
             self.errors["record_date"] = "Please type date."
 
-        if not self.raw_material_request_number:
-            self.errors["raw_material_request_number"] = "Please type request number."
+        if not self.cash_id:
+            self.errors["cash_id"] = "Please select cash account."
+
+        if not self.disbursement_number:
+            self.errors["disbursement_number"] = "Please type cd number."
         else:
             duplicate = Obj.query.filter(
                 func.lower(
-                    Obj.raw_material_request_number
-                    ) == func.lower(self.raw_material_request_number), 
+                    Obj.disbursement_number
+                    ) == func.lower(self.disbursement_number), 
                     Obj.id != self.id
                     ).first()
             if duplicate:
-                self.errors["raw_material_request_number"] = "Request number is already used, please verify."        
+                self.errors["disbursement_number"] = "CD number is already used, please verify."        
+
+        if not self.check_number:
+            self.errors["check_number"] = "Please type check number."
+        else:
+            duplicate = Obj.query.filter(
+                func.lower(
+                    Obj.check_number
+                    ) == func.lower(self.check_number), 
+                    Obj.id != self.id
+                    ).first()
+            if duplicate:
+                self.errors["check_number"] = "Check number is already used, please verify."        
+
+        if not self.check_name_id:
+            self.errors["check_name_id"] = "Please select name on check."
 
         for i in range(DETAIL_ROWS):
             if not self.details[i][1]._validate():

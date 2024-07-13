@@ -90,15 +90,16 @@
     
     <div class="row mb-2">
         {{ date_box(form, "Date", "record_date", form.record_date, autofocus=True) }}
-        {{ text_box(form, "CD No.", "disbursement_number", form.disbursement_number, autofocus=False) }}
-    </div>
-
-    <div class="row mb-2">
-        {{ text_box(form, "Check No.", "check_number", form.check_number, autofocus=False) }}
         {{ select_box(form, "Cash Account", "cash_id", form.cash_id, cash_options, autofocus=False) }}
     </div>
 
     <div class="row mb-2">
+        {{ text_box(form, "CD No.", "disbursement_number", form.disbursement_number, autofocus=False) }}
+        {{ text_box(form, "Check No.", "check_number", form.check_number, autofocus=False) }}
+    </div>
+
+    <div class="row mb-2">
+        {{ select_box(form, "Name on Check", "check_name_id", form.check_name_id, vendor_options, autofocus=False) }}
         {{ text_box(form, "Notes", "notes", form.notes, autofocus=False) }}
     </div>
 
@@ -114,6 +115,7 @@
                     <th>VT</th>
                     <th>WT</th>
                     <th>Account Title</th>
+                    <th>Particulars</th>
                 </tr>
             </thead>
             <tbody>                
@@ -123,30 +125,15 @@
                         {{ detail_primary_key(i, form_detail, "disbursement_id", form_detail.id) }}
                         {{ detail_select_box(i, form, form_detail, "vendor_id", form_detail.vendor_id, vendor_options) }}
                     </td>
-                    <td>
-                        {{ detail_number_float(i, form, form_detail, "invalid", form_detail.invalid) }}
-                    </td>
-                    <td>
-                        {{ detail_number_float(i, form, form_detail, "wages", form_detail.wages) }}
-                    </td>
-                    <td>
-                        {{ detail_number_float(i, form, form_detail, "exempted", form_detail.exempted) }}
-                    </td>
-                    <td>
-                        {{ detail_number_float(i, form, form_detail, "zero_rated", form_detail.zero_rated) }}
-                    </td>
-                    <td>
-                        {{ detail_number_float(i, form, form_detail, "vat_registered", form_detail.vat_registered) }}
-                    </td>
-                    <td>
-                        {{ detail_select_box(i, form, form_detail, "vat_id", form_detail.vat_id, vat_options) }}
-                    </td>
-                    <td>
-                        {{ detail_select_box(i, form, form_detail, "wtax_id", form_detail.wtax_id, wtax_options) }}
-                    </td>
-                    <td>
-                        {{ detail_select_box(i, form, form_detail, "account_id", form_detail.account_id, account_options) }}
-                    </td>
+                    <td>{{ detail_textbox(i, form, form_detail, "reference", form_detail.reference) }}</td>
+                    <td>{{ detail_number_float(i, form, form_detail, "not_applicable", form_detail.not_applicable) }}</td>
+                    <td>{{ detail_number_float(i, form, form_detail, "exempted", form_detail.exempted) }}</td>
+                    <td>{{ detail_number_float(i, form, form_detail, "zero_rated", form_detail.zero_rated) }}</td>
+                    <td>{{ detail_number_float(i, form, form_detail, "vat_registered", form_detail.vat_registered) }}</td>
+                    <td>{{ detail_select_box(i, form, form_detail, "vat_id", form_detail.vat_id, vat_options) }}</td>
+                    <td>{{ detail_select_box(i, form, form_detail, "wtax_id", form_detail.wtax_id, wtax_options) }}</td>
+                    <td>{{ detail_select_box(i, form, form_detail, "account_id", form_detail.account_id, account_options) }}</td>
+                    <td>{{ detail_textbox(i, form, form_detail, "particulars", form_detail.particulars) }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

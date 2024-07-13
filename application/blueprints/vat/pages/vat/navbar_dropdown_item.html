@@ -1,0 +1,5 @@
+{% if ("VAT" in current_user.user_roles) %}
+<li>
+  <a class="dropdown-item" href="{{ url_for('vat.home') }}">Vat Categories</a>
+</li>
+{% endif %}

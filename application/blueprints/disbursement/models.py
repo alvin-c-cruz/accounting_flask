@@ -2,14 +2,18 @@ from application.extensions import db, short_date
 from . import app_name, model_name
 
 
-class RawMaterialRequest(db.Model):
+class Disbursement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     record_date = db.Column(db.String())
-    raw_material_request_number = db.Column(db.String())
 
-    notes = db.Column(db.String())
+    cash_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
+    cash = db.relationship('Account', backref='disbursement_details', lazy=True)
 
-    active = db.Column(db.Boolean())
+    disbursement_number = db.Column(db.String())
+    check_number = db.Column(db.String())
+
+    check_name_id = db.Column(db.Integer, db.ForeignKey('vendor.id'), nullable=False)
+    check_name = db.relationship('Vendor', backref='disbursement_details', lazy=True)
 
     submitted = db.Column(db.String())
     cancelled = db.Column(db.String())
@@ -19,7 +23,7 @@ class RawMaterialRequest(db.Model):
 
     @property
     def preparer(self):
-        obj = UserRawMaterialRequest.query.filter(getattr(UserRawMaterialRequest, f"{app_name}_id")==self.id).first()
+        obj = UserDisbursement.query.filter(getattr(UserDisbursement, f"{app_name}_id")==self.id).first()
         return obj
 
     @property
@@ -38,29 +42,39 @@ class RawMaterialRequest(db.Model):
         return True if self.submitted else False
 
 
-class RawMaterialRequestDetail(db.Model):
+class DisbursementDetail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-    raw_material_request_id = db.Column(db.Integer, db.ForeignKey(f'{app_name}.id'), nullable=False)
-    raw_material_request = db.relationship(model_name, backref=f'{app_name}_details', lazy=True)
+    disbursement_id = db.Column(db.Integer, db.ForeignKey(f'{app_name}.id'), nullable=False)
+    disbursement = db.relationship(model_name, backref=f'{app_name}_details', lazy=True)
 
-    quantity = db.Column(db.Float, default=0)
-    
-    measure_id = db.Column(db.Integer, db.ForeignKey('measure.id'), nullable=False)
-    measure = db.relationship('Measure', backref=f'{app_name}_details', lazy=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendor.id'), nullable=False)
+    vendor = db.relationship('Vendor', backref=f'{app_name}_details', lazy=True)
 
-    raw_material_id = db.Column(db.Integer, db.ForeignKey(f'raw_material.id'), nullable=False)
-    raw_material = db.relationship('RawMaterial', backref=f'{app_name}_details', lazy=True)
+    reference = db.Column(db.String())
+    not_applicable = db.Column(db.Float, default=0)
+    exempted = db.Column(db.Float, default=0)
+    zero_rated = db.Column(db.Float, default=0)
+    vat_registered = db.Column(db.Float, default=0)
 
-    side_note = db.Column(db.String())
+    vat_id = db.Column(db.Integer, db.ForeignKey(f'vat.id'), nullable=False)
+    vat = db.relationship('Vat', backref=f'{app_name}_details', lazy=True)
+
+    wtax_id = db.Column(db.Integer, db.ForeignKey(f'wtax.id'), nullable=False)
+    wtax = db.relationship('Wtax', backref=f'{app_name}_details', lazy=True)
+
+    account_id = db.Column(db.Integer, db.ForeignKey(f'account.id'), nullable=False)
+    account = db.relationship('Account', backref=f'{app_name}_details', lazy=True)
+
+    particulars = db.Column(db.String())
 
 
-class UserRawMaterialRequest(db.Model):
-    raw_material_request_id = db.Column(db.Integer, db.ForeignKey(f'{app_name}.id'), primary_key=True)
-    raw_material_request = db.relationship(model_name, backref='user_prepare', lazy=True)
+class UserDisbursement(db.Model):
+    disbursement_id = db.Column(db.Integer, db.ForeignKey(f'{app_name}.id'), primary_key=True)
+    disbursement = db.relationship(model_name, backref='user_prepare', lazy=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    user = db.relationship('User', backref=f'{app_name}_prepared', lazy=True)
+    user = db.relationshipMeasure('User', backref=f'{app_name}_prepared', lazy=True)
 
     def __str__(self):
         return self.user.user_name
@@ -69,9 +83,9 @@ class UserRawMaterialRequest(db.Model):
         return self.user.user_name
 
 
-class AdminRawMaterialRequest(db.Model):
-    raw_material_request_id = db.Column(db.Integer, db.ForeignKey(f'{app_name}.id'), primary_key=True)
-    raw_material_request = db.relationship(model_name, backref='user_approved', lazy=True)
+class AdminDisbursement(db.Model):
+    disbursement_id = db.Column(db.Integer, db.ForeignKey(f'{app_name}.id'), primary_key=True)
+    disbursement = db.relationship(model_name, backref='user_approved', lazy=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     user = db.relationship('User', backref=f'{app_name}_approved', lazy=True)
