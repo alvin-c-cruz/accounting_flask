@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macros_simple_form.html" import text_box, text_area, save_button %}
+{% from "macros_simple_form.html" import text_box, float_box, text_area, save_button %}
 
 {% block title %}{{ app_label }}{% endblock %}
 
@@ -14,12 +14,10 @@
     <form action="{{ url.add }}" method="post">
         {% endif %}
     
-        {{ text_box(form, "Item Name", "item_name", form.item_name, autofocus=True) }}
+        {{ text_box(form, "Wtax Type", "wtax_type_name", form.wtax_type_name, autofocus=True) }}
 
         {{  save_button() }}
 
     </form>
 </div>
 {% endblock %}
-
-

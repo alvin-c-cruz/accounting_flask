@@ -1,0 +1,5 @@
+{% if ("Wtax" in current_user.user_roles) %}
+<li>
+  <a class="dropdown-item" href="{{ url_for('wtax.home') }}">Wtax Categories</a>
+</li>
+{% endif %}

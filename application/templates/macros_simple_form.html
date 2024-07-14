@@ -51,8 +51,8 @@
                 {% endif %}       
             {% endfor %}
         </select>
-        {% if form.errors.get('{{ field_name }}') %}
-        <p class="text-danger">{{ form.errors.get('{{ field_name }}') }}</p>
+        {% if form.errors.get(field_name) %}
+        <p class="text-danger">{{ form.errors.get(field_name) }}</p>
         {% endif %}    
     </div>
 </div>
