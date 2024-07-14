@@ -9,10 +9,14 @@ class Account(db.Model):
     active = db.Column(db.Boolean())
 
     def __str__(self):
-        return getattr(self, f"{app_name}_name")
+        return f"{record.account_number}: {record.account_name}"
     
     def options(self):
-        _options = [{"id": record.id, "dropdown_name": getattr(record, f"{app_name}_name")} for record in self.query.order_by(f"{app_name}_name").all() if record.active]
+        _options = [
+            {"id": record.id, "dropdown_name": f"{record.account_number}: {record.account_name}"} 
+            for record in self.query.order_by(f"{app_name}_name").all() 
+            if record.active
+            ]
         return _options
 
     @property

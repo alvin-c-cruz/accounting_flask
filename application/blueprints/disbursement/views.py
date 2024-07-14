@@ -9,7 +9,7 @@ from .. account import Account
 from .. vendor import Vendor
 from .. vat import Vat
 from .. wtax import Wtax
-from application.extensions import db, month_first_day, month_last_day, next_control_number
+from application.extensions import db, month_first_day, month_last_day, next_control_number, Url
 from .. user import login_required, roles_accepted
 from . import app_name, app_label
 
@@ -41,6 +41,7 @@ def home():
         "date_to": date_to,
         "app_name": app_name, 
         "app_label": app_label,
+        "url": Url(Obj),
     }
 
     return render_template(f"{app_name}/home.html", **context)
@@ -50,11 +51,6 @@ def home():
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def add():
-    account_dropdown = Account().options()
-    vendor_dropdown = Vendor().options()
-    vat_dropdown = Vat().options()
-    wtax_dropdown = Wtax().options()
-
     if request.method == "POST":
         form = Form()
         form._post(request.form)
@@ -79,10 +75,13 @@ def add():
 
     context = {
         "form": form,
-        "account_dropdown": account_dropdown,
-        "vendor_dropdown": vendor_dropdown,
-        "vat_dropdown": vat_dropdown,
-        "wtax_dropdown": wtax_dropdown,
+        "account_options": Account().options(),
+        "vendor_options": Vendor().options(),
+        "vat_options": Vat().options(),
+        "wtax_options": Wtax().options(),
+        "app_name": app_name, 
+        "app_label": app_label,
+        "url": Url(Obj),
     }
 
     return render_template(f"{app_name}/form.html", **context)
@@ -92,11 +91,6 @@ def add():
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def edit(record_id):   
-    account_dropdown = Account().options()
-    vendor_dropdown = Vendor().options()
-    vat_dropdown = Vat().options()
-    wtax_dropdown = Wtax().options()
-
     record = Obj.query.get_or_404(record_id)
 
     if request.method == "POST":
@@ -124,10 +118,13 @@ def edit(record_id):
 
     context = {
         "form": form,
-        "account_dropdown": account_dropdown,
-        "vendor_dropdown": vendor_dropdown,
-        "vat_dropdown": vat_dropdown,
-        "wtax_dropdown": wtax_dropdown,
+        "account_options": Account().options(),
+        "vendor_options": Vendor().options(),
+        "vat_options": Vat().options(),
+        "wtax_options": Wtax().options(),
+        "app_name": app_name, 
+        "app_label": app_label,
+        "url": Url(form),
     }
 
     return render_template(f"{app_name}/form.html", **context)
@@ -137,11 +134,6 @@ def edit(record_id):
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def view(record_id):   
-    account_dropdown = Account().options()
-    vendor_dropdown = Vendor().options()
-    vat_dropdown = Vat().options()
-    wtax_dropdown = Wtax().options()
-
     record = Obj.query.get_or_404(record_id)
 
     if request.method == "POST":
@@ -152,10 +144,13 @@ def view(record_id):
 
     context = {
         "form": form,
-        "account_dropdown": account_dropdown,
-        "vendor_dropdown": vendor_dropdown,
-        "vat_dropdown": vat_dropdown,
-        "wtax_dropdown": wtax_dropdown,
+        "account_options": Account().options(),
+        "vendor_options": Vendor().options(),
+        "vat_options": Vat().options(),
+        "wtax_options": Wtax().options(),
+        "app_name": app_name, 
+        "app_label": app_label,
+        "url": Url(form),
     }
 
     return render_template(f"{app_name}/form.html", **context)

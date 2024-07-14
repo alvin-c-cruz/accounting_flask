@@ -30,7 +30,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container p-5">
+<div class="container-fluid p-5">
     {% if form.id %}
         {% if form.submitted or form.cancelled %}
         <h1 class="mb-4"><span style="color:red;">Locked</span> {{ app_label }}</h1>
@@ -107,8 +107,8 @@
             <thead>
                 <tr>
                     <th>Payee Name</th>
-                    <th>Invalid</th>
-                    <th>Wages</th>
+                    <th>Reference</th>
+                    <th>Not applicable</th>
                     <th>VAT Exempted</th>
                     <th>VAT Zero-Rated</th>
                     <th>VAT 12%</th>

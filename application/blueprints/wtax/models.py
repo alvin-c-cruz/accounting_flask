@@ -17,7 +17,7 @@ class Wtax(db.Model):
         return getattr(self, f"{app_name}_name")
     
     def options(self):
-        _options = [{"id": record.id, "dropdown_name": getattr(record, f"{app_name}_name")} for record in self.query.order_by(f"{app_name}_name").all() if record.active]
+        _options = [{"id": record.id, "dropdown_name": getattr(record, "atc")} for record in self.query.order_by("atc").all() if record.active]
         return _options
 
     @property

@@ -7,13 +7,13 @@ class Disbursement(db.Model):
     record_date = db.Column(db.String())
 
     cash_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
-    cash = db.relationship('Account', backref='disbursement_details', lazy=True)
+    cash = db.relationship('Account', backref='disbursements', lazy=True)
 
     disbursement_number = db.Column(db.String())
     check_number = db.Column(db.String())
 
     check_name_id = db.Column(db.Integer, db.ForeignKey('vendor.id'), nullable=False)
-    check_name = db.relationship('Vendor', backref='disbursement_details', lazy=True)
+    check_name = db.relationship('Vendor', backref='disbursements', lazy=True)
 
     submitted = db.Column(db.String())
     cancelled = db.Column(db.String())
@@ -74,7 +74,7 @@ class UserDisbursement(db.Model):
     disbursement = db.relationship(model_name, backref='user_prepare', lazy=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    user = db.relationshipMeasure('User', backref=f'{app_name}_prepared', lazy=True)
+    user = db.relationship('User', backref=f'{app_name}_prepared', lazy=True)
 
     def __str__(self):
         return self.user.user_name

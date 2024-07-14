@@ -1,8 +1,8 @@
-app_name = "raw_material_request"
-app_label = "Raw Material Request"
+app_name = "disbursement"
+app_label = "Disbursement"
 menu_label = (app_name, f"/{app_name}", app_label)
-model_name = "RawMaterialRequest"
+model_name = "Disbursement"
 
 
 from .views import bp
-from .models import RawMaterialRequest, RawMaterialRequestDetail
+from .models import Disbursement, DisbursementDetail

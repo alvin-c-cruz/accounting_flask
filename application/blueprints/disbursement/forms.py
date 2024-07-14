@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from sqlalchemy import func
 from application.extensions import db
-from .models import RawMaterialRequest as Obj
-from .models import RawMaterialRequestDetail as ObjDetail
-from .models import UserRawMaterialRequest as Preparer
+from .models import Disbursement as Obj
+from .models import DisbursementDetail as ObjDetail
+from .models import UserDisbursement as Preparer
 from datetime import datetime
 from . import app_name
 
