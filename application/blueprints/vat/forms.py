@@ -6,14 +6,13 @@ from .models import UserVat as Preparer
 from . import app_name
 
 INTEGER_FIELDS = []
-FLOAT_FIELDS = ["tax_rate"]
+FLOAT_FIELDS = []
 
 
 @dataclass
 class Form:
     id: int = None
     vat_name: str = ""
-    tax_rate: float = 0
     
     user_prepare_id: int = None
     user_prepare: str = ""

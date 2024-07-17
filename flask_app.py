@@ -10,7 +10,7 @@ if __name__ == "__main__":
     app.debug = True
     
     host = socket.gethostbyname(socket.gethostname())
-    port = 9000
+    port = 8000
     
     web_site = f"http://{host}:{port}"
     print(f"Please type on your browser this web address: {web_site}")

@@ -5,7 +5,6 @@ from . import app_name, model_name
 class Vat(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     vat_name = db.Column(db.String(255))
-    tax_rate = db.Column(db.Float())
     active = db.Column(db.Boolean())
 
     def __str__(self):

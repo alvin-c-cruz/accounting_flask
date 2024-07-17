@@ -53,6 +53,7 @@ class SubForm:
     vat_id: int = 0
     wtax_id: int = 0
     account_id: int = 0
+    particulars: str = ""
 
     errors = {}
 
@@ -76,7 +77,21 @@ class SubForm:
             return False    
 
     def _is_dirty(self):
-        return any(get_attributes(self))    
+        _attributes = [
+            self.vendor_id,
+            self.reference,
+            self.not_applicable,
+            self.exempted,
+            self.zero_rated,
+            self.vat_registered,
+            self.vat_id,
+            self.wtax_id,
+            self.account_id,
+            self.particulars,
+        ]
+
+        return any(_attributes)    
+
         
 
 @dataclass
@@ -159,10 +174,8 @@ class Form:
    
     def _populate(self, obj):
         for attribute in get_attributes(self):
-            if attribute in []:
-                setattr(self, attribute, int(getattr(obj, attribute)))
-            else:
-                setattr(self, attribute, getattr(obj, attribute))
+            print(attribute, getattr(obj, attribute))
+            setattr(self, attribute, getattr(obj, attribute))
 
         for i, row in enumerate(getattr(obj, f"{app_name}_details")):
             subform = SubForm()
@@ -172,13 +185,13 @@ class Form:
     def _post(self, request_form):
         for attribute in get_attributes(self):
             if attribute == "id":
-                value = getattr(request_form, "get")(f"{app_name}_id")
+                value = getattr(request_form, "get")(f"record_id")
                 if value:
                     setattr(self, "id", int(value))
-            elif attribute in []:
+            elif attribute in HEADER_INTEGER_FIELDS:
                 setattr(self, attribute, int(getattr(request_form, "get")(attribute)))
-            elif attribute in ("submitted", "cancelled"):
-                continue
+            elif attribute in HEADER_FLOAT_FIELDS:
+                setattr(self, attribute, float(getattr(request_form, "get")(attribute)))
             else:
                 setattr(self, attribute, getattr(request_form, "get")(attribute))
 

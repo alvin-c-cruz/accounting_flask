@@ -15,7 +15,6 @@
                     <thead class="thead-light">
                         <tr>
                             <th>Description</th>
-                            <th>Tax Rate</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -23,7 +22,6 @@
                         {% for row in rows %}
                         <tr>
                             <td>{{ row.vat_name }}</td>
-                            <td>{{ row.tax_rate }}</td>
                             <td>
                                 {% if not row.approved %}
                                 {{ edit_button(row.url.edit) }}
@@ -41,7 +39,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="3">No record found.</td>
+                            <td colspan="2">No record found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
