@@ -119,6 +119,7 @@ def edit(record_id):
 
     context = {
         "form": form,
+        "cash_options": Account().options(),
         "account_options": Account().options(),
         "vendor_options": Vendor().options(),
         "vat_options": Vat().options(),
@@ -145,6 +146,7 @@ def view(record_id):
 
     context = {
         "form": form,
+        "cash_options": Account().options(),
         "account_options": Account().options(),
         "vendor_options": Vendor().options(),
         "vat_options": Vat().options(),

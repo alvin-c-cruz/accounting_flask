@@ -33,7 +33,7 @@
 <div class="container-fluid p-5">
     {% if form.id %}
         {% if form.submitted or form.cancelled %}
-        <h1 class="mb-4"><span style="color:red;">Locked</span> {{ app_label }}</h1>
+        <h1 class="mb-4"><span style="color:red;">Posted</span> {{ app_label }}</h1>
         {% else %}   
         <h1 class="mb-4">Edit {{ app_label }}</h1>
         {% endif %}
@@ -65,9 +65,13 @@
                 <div class="col-4">
                     {% if form.id %}
                         {% if form.submitted or form.cancelled %}
+                            {% if proceed %}
                     <a href="{{ url.print }}" 
                         class="btn btn-secondary form-control" 
                         target="_blank">Print</a>
+                            {% else %}
+                    <a href="#" class="btn btn-secondary form-control" onclick="alert('Coming soon')">Print</a>
+                            {% endif %}
                         {% else %}
                     <input type="submit" value="Submit for Printing" name="cmd_button" 
                         class="btn btn-primary form-control" 

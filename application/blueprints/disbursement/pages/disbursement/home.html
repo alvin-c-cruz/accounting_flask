@@ -33,6 +33,7 @@
                             <th>CD No.</th>
                             <th>Check No.</th>
                             <th>Amount</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -48,7 +49,7 @@
                                 <p style="color: red;">Cancelled {{ row.formatted_cancelled }}</p>
                                 {% endif %}
                                 {% if row.submitted %}
-                                <p>For PO {{ row.formatted_submitted }}</p>
+                                <p>Posted {{ row.formatted_submitted }}</p>
                                 {% endif %}
                                 {% if not (row.submitted or row.cancelled) %}
                                 <p style="color: green;">DRAFT</p>
@@ -56,22 +57,22 @@
                             </td>
                             <td>
                                 {% if row.submitted or row.cancelled %}
-                                    <a href="{{ url.view }}"
+                                    <a href="{{ row.url.view }}"
                                     class="btn btn-warning btn-sm">View</a>
                                     {% if current_user.admin %}
-                                    <a href="{{ url.unlock }}"
+                                    <a href="{{ row.url.unlock }}"
                                     class="btn btn-danger btn-sm"
                                     onclick="return confirmMessage('Type YES to unlock this record.')">Unlock</a>
                                     {% endif %}
                                 {% else %}
-                                    <a href="{{ url.edit }}"
+                                    <a href="{{ row.url.edit }}"
                                     class="btn btn-warning btn-sm">Edit</a>
-                                    <a href="{{ url.cancel }}"
+                                    <a href="{{ row.url.cancel }}"
                                     class="btn btn-danger btn-sm"
                                     onclick="return confirmMessage('Type YES to cancel this record.')">Cancel</a>
                                 {% endif %}
                                 {% if current_user.admin %}
-                                <a href="{{ url.delete }}"
+                                <a href="{{ row.url.delete }}"
                                 class="btn btn-danger btn-sm"
                                 onclick="return confirmMessage('Type YES to Delete this record.')">Delete</a>
                                 {% endif %}

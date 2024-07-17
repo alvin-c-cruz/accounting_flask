@@ -118,8 +118,12 @@ class Form:
     def _save(self, submitted=None):
         if self.id is None:
             # Add a new record
+            _dict = {}
+            for i in get_attributes(self): _dict[i] = getattr(self, i)
+            _dict.pop("id")
+            
             new_record = Obj(
-                **get_attributes_as_dict(self)
+                **_dict
                 )
             db.session.add(new_record)
             db.session.commit()

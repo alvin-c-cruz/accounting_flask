@@ -1,4 +1,4 @@
-from application.extensions import db, short_date
+from application.extensions import db, short_date, Url
 from . import app_name, model_name
 
 
@@ -41,6 +41,18 @@ class Disbursement(db.Model):
     def is_submitted(self):
         return True if self.submitted else False
 
+    @property
+    def url(self):
+        return Url(self)
+    
+    @property
+    def amount(self):
+        return "Coming soon"
+    
+    @property
+    def formatted_amount(self):
+        return "Coming soon"
+    
 
 class DisbursementDetail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
