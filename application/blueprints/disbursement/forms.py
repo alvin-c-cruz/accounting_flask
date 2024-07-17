@@ -174,7 +174,6 @@ class Form:
    
     def _populate(self, obj):
         for attribute in get_attributes(self):
-            print(attribute, getattr(obj, attribute))
             setattr(self, attribute, getattr(obj, attribute))
 
         for i, row in enumerate(getattr(obj, f"{app_name}_details")):
