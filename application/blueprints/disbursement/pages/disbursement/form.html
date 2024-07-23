@@ -37,21 +37,29 @@
         {% else %}   
         <h1 class="mb-4">Edit {{ app_label }}</h1>
         {% endif %}
-        <form action="{{ url.edit }}" method="post">
+        <form action="{{ url.edit }}" method="post" enctype="multipart/form-data">
             <input type="number" name="record_id" value="{{ form.id }}" hidden>
     {% else %}
         <h1 class="mb-4">New {{ app_label }}</h1>
-        <form action="{{ url.add }}" method="post">
+        <form action="{{ url.add }}" method="post" enctype="multipart/form-data">
     {% endif %}
     <hr>
     <div class="row mb-2">
         <div class="col-6">
-            {% if form.errors.get('entry') %}
-            <p class="text-danger">{{ form.errors.get('entry') }}</p>
-            {% endif %}    
-            {% if form.cancelled %}
-            <h1 style="color:red;">CANCELLED</h1>
-            {% endif %}    
+            <div class="row">
+                <div class="col-6">
+                    {% if form.errors.get('entry') %}
+                    <p class="text-danger">{{ form.errors.get('entry') }}</p>
+                    {% endif %}    
+                    {% if form.cancelled %}
+                    <h1 style="color:red;">CANCELLED</h1>
+                    {% endif %}    
+                </div>
+                <div class="col-6">
+                    <label for="files">Upload files:</label>
+                    <input type="file" id="files" name="files" multiple accept=".pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+                </div>
+            </div>
         </div>
         <div class="col-6">
             <div class="row">
