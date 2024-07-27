@@ -15,6 +15,7 @@
                     <thead class="thead-light">
                         <tr>
                             <th>Account Classification</th>
+                            <th>Order Priority</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -22,6 +23,7 @@
                         {% for row in rows %}
                         <tr>
                             <td>{{ row.account_classification_name }}</td>
+                            <td>{{ row.priority }}</td>
                             <td>
                                 {% if not row.approved %}
                                 {{ edit_button(row.url.edit) }}
@@ -39,7 +41,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="2">No record found.</td>
+                            <td colspan="3">No record found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>

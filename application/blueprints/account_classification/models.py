@@ -5,6 +5,7 @@ from . import app_name, model_name
 class AccountClassification(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     account_classification_name = db.Column(db.String(255))
+    priority = db.Column(db.Integer())
 
     active = db.Column(db.Boolean())
 
@@ -12,7 +13,7 @@ class AccountClassification(db.Model):
         return getattr(self, f"{app_name}_name")
     
     def options(self):
-        _options = [{"id": record.id, "dropdown_name": getattr(record, f"{app_name}_name")} for record in self.query.order_by(f"{app_name}_name").all() if record.active]
+        _options = [{"id": record.id, "dropdown_name": getattr(record, f"{app_name}_name")} for record in self.query.order_by("priority").all() if record.active]
         return _options
 
     @property

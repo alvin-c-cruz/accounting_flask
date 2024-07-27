@@ -12,6 +12,7 @@ from .. wtax import Wtax
 from application.extensions import db, month_first_day, month_last_day, next_control_number, Url
 from .. user import login_required, roles_accepted
 from . import app_name, app_label
+from .extensions import allowed_file
 
 
 bp = Blueprint(app_name, __name__, template_folder="pages", url_prefix=f"/{app_name}")
@@ -54,6 +55,7 @@ def add():
     if request.method == "POST":
         form = Form()
         form._post(request.form)
+        form._post_files(request.files)
 
         if form._validate_on_submit():
             form.user_prepare_id = current_user.id

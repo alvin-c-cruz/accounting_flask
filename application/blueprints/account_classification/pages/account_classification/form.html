@@ -15,6 +15,7 @@
         {% endif %}
     
         {{ text_box(form, "Account Classification", "account_classification_name", form.account_classification_name, autofocus=True) }}
+        {{ text_box(form, "Order Priority", "priority", form.priority, autofocus=False) }}
 
         {{  save_button() }}
 

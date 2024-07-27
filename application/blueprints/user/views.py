@@ -111,6 +111,7 @@ def login():
         form = LoginForm()
     
     check_roles()
+    default_classifications()
     
     context = {
         "form": form,
@@ -242,4 +243,45 @@ def check_roles():
         if not role:
             role = Role(role_name=role_name)
             db.session.add(role)
+            db.session.commit()
+            
+
+def default_classifications():
+    from application.blueprints.account_classification import AccountClassification, UserAccountClassification,  AdminAccountClassification
+    from .models import User
+    
+    classifications = [
+        "CASH", "RECEIVABLE", "INVENTORY", "OTHER CURRENT ASSET", 
+        "FIXED ASSET", "OTHER ASSET",
+        "ACCOUNTS PAYABLE", "OTHER PAYABLE", "LONG-TERM LOAN",
+        "EQUITY", "RETAINED EARNINGS", "EQUITY-GET-CLOSED",
+        "REVENUE", "COST OF SALES", "OPERATING EXPENSES",
+        "OTHER INCOME", "OTHER EXPENSES"
+        ]
+    
+    admin = User.query.filter_by(user_name="admin").first()
+
+    for i, account_classification_name in enumerate(classifications, start=1):
+        classification = AccountClassification.query.filter_by(account_classification_name=account_classification_name).first()
+        if not classification:
+            classification =  AccountClassification(
+                account_classification_name=account_classification_name,
+                priority=i,
+                active=True
+                )
+            db.session.add(classification)
+            db.session.commit()
+            
+            user_classification = UserAccountClassification(
+                account_classification_id=classification.id,
+                user_id=admin.id
+            )
+            db.session.add(user_classification)
+
+            addmin_classification = AdminAccountClassification(
+                account_classification_id=classification.id,
+                user_id=admin.id
+            )
+            db.session.add(addmin_classification)
+            
             db.session.commit()

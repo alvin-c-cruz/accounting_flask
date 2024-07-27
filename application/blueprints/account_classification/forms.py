@@ -5,7 +5,7 @@ from .models import AccountClassification as Obj
 from .models import UserAccountClassification as Preparer
 from . import app_name
 
-INTEGER_FIELDS = []
+INTEGER_FIELDS = ["priority"]
 FLOAT_FIELDS = []
 
 
@@ -13,6 +13,7 @@ FLOAT_FIELDS = []
 class Form:
     id: int = None
     account_classification_name: str = ""
+    priority: int = 0
     
     user_prepare_id: int = None
     user_prepare: str = ""
@@ -90,6 +91,9 @@ class Form:
             existing_ = Obj.query.filter(func.lower(Obj.account_classification_name) == func.lower(self.account_classification_name), Obj.id != self.id).first()
             if existing_:
                 self.errors["account_classification_name"] = "Account Classification already exists."
+
+        if not self.priority:
+            self.errors["priority"] = "Please type priority."
 
         if not self.errors:
             return True
