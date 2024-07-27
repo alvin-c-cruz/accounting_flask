@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macros_simple_form.html" import text_box, text_area, save_button %}
+{% from "macros_simple_form.html" import select_box, text_box, text_area, save_button %}
 
 {% block title %}Account{% endblock %}
 
@@ -16,6 +16,7 @@
     
         {{ text_box(form, "Account Number", "account_number", form.account_number, autofocus=True) }}
         {{ text_box(form, "Account Title", "account_name", form.account_name, autofocus=False) }}
+        {{ select_box(form, "Account Classification", "account_classification_id", form.account_classification_id, account_classification_options, autofocus=False) }}
 
         {{  save_button() }}
 

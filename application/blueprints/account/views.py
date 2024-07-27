@@ -2,12 +2,12 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 import json
 from sqlalchemy.exc import IntegrityError
 from .models import Account as Obj
-from .models import UserAccount as Preparer
 from .models import AdminAccount as Approver
 from .forms import Form
 from application.extensions import db, Url
 from application.blueprints.user import login_required, roles_accepted
 from flask_login import current_user
+from .. account_classification import AccountClassification
 
 from . import app_name, app_label
 
@@ -47,7 +47,8 @@ def add():
 
     context = {
         "form": form,
-        "url": Url(Obj)
+        "url": Url(Obj),
+        "account_classification_options": AccountClassification().options(),
     }
 
     return render_template(f"{app_name}/form.html", **context)
@@ -73,7 +74,8 @@ def edit(record_id):
 
     context = {
         "form": form,
-        "url": Url(obj)
+        "url": Url(obj),
+        "account_classification_options": AccountClassification().options(),
     }
 
     return render_template(f"{app_name}/form.html", **context)

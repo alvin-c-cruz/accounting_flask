@@ -11,6 +11,7 @@ class Form:
     id: int = None
     account_number: str = ""
     account_name: str = ""
+    account_classification_id: int = 0
     
     user_prepare_id: int = None
     user_prepare: str = ""
@@ -94,6 +95,9 @@ class Form:
             existing_ = Obj.query.filter(func.lower(Obj.account_name) == func.lower(self.account_name), Obj.id != self.id).first()
             if existing_:
                 self.errors["account_name"] = "Account title already exists."
+
+        if not self.account_classification_id:
+            self.errors["account_classification_id"] = "Please select account classification."
 
         if not self.errors:
             return True

@@ -6,10 +6,14 @@ class Account(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     account_number = db.Column(db.String(255))
     account_name = db.Column(db.String(255))
+    
+    account_classification_id = db.Column(db.Integer, db.ForeignKey('account_classification.id'), nullable=False)
+    account_classification = db.relationship('AccountClassification', backref='accounts', lazy=True)
+    
     active = db.Column(db.Boolean())
 
     def __str__(self):
-        return f"{record.account_number}: {record.account_name}"
+        return f"{self.account_number}: {self.account_name}"
     
     def options(self):
         _options = [
