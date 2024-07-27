@@ -1,6 +1,7 @@
 from . import main
 from . import user
 
+from . import account_classification
 from . import account
 from . import vendor
 from . import item
