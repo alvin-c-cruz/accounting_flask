@@ -223,8 +223,7 @@ class Form:
         voucher_path = disbursements_path / self.disbursement_number
         if not voucher_path.is_dir():  voucher_path.mkdir()
 
-                    
-        
+        self.files = [file for file in voucher_path.iterdir() if file.is_file()]         
 
     def _post(self, request_form):
         for attribute in get_attributes(self):
@@ -233,7 +232,7 @@ class Form:
                 if value:
                     setattr(self, "id", int(value))
             elif attribute in HEADER_INTEGER_FIELDS:
-                setattr(self, attribute, int(getattr(request_form, "get")(attribute)))
+                setattr(self, attribute, int(request_form.get(attribute)))
             elif attribute in HEADER_FLOAT_FIELDS:
                 setattr(self, attribute, float(getattr(request_form, "get")(attribute)))
             else:

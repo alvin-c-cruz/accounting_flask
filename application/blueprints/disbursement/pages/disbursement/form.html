@@ -56,13 +56,6 @@
                     {% endif %}    
                 </div>
                 <div class="col-6">
-                    <label for="files">Upload files:</label>
-                    <input type="file" id="files" name="files" multiple>
-                    {% if form.errors.get("files") %}
-                        {% for error in form.errors.get("files") %}
-                        <p class="text-danger">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -155,7 +148,36 @@
                 {% endfor %}
             </tbody>
         </table>
+
+    {% if not form.submitted %} 
+        <label for="files">Upload files:</label>
+        <input type="file" id="files" name="files" multiple>
+        {% if form.errors.get("files") %}
+            {% for error in form.errors.get("files") %}
+            <p class="text-danger">{{ error }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+    
     </form>
+    
+
+    {% if form.files %}
+    <h2>Uploaded Files</h2>
+        {% for file in form.files %}
+            <div class="card" style="width: 50%; max-width: 400px; margin: 0;">
+                <div class="card-body d-flex justify-content-between align-items-center p-2">
+                    <a href="{{ url_for('disbursement.download', record_id=form.id, file_download=file) }}" class="card-link text-decoration-none text-primary fw-bold">{{ file.name }}</a>
+                    {% if not form.submitted %}
+                    <a href="{{ url_for('disbursement.delete_file', record_id=form.id, file_delete=file) }}" class="btn btn-danger btn-sm">x</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        {% else %}
+            <span>No files uploaded.</span>
+        {% endif %}
+
 
     <script>
         // Get the input element

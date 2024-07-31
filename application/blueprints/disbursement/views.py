@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+from pathlib import Path
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, send_file
 from flask_login import current_user
 import datetime
 from sqlalchemy.exc import IntegrityError
@@ -12,7 +13,6 @@ from .. wtax import Wtax
 from application.extensions import db, month_first_day, month_last_day, next_control_number, Url
 from .. user import login_required, roles_accepted
 from . import app_name, app_label
-from .extensions import allowed_file
 
 
 bp = Blueprint(app_name, __name__, template_folder="pages", url_prefix=f"/{app_name}")
@@ -100,6 +100,7 @@ def edit(record_id):
         form = Form()
         form._post(request.form)
         form._post_files(request.files.getlist('files'))
+        # print(request.files.getlist('files'))
 
         if form._validate_on_submit():
             cmd_button = request.form.get("cmd_button")
@@ -216,6 +217,57 @@ def unlock(record_id):
         flash(f"Administrator right is needed for this function.", category="error")
 
     return redirect(url_for(f'{app_name}.home'))
+
+
+
+@bp.route("/download/<int:record_id>", methods=["POST", "GET"])
+@login_required
+@roles_accepted([ROLES_ACCEPTED])
+def download(record_id):
+    record = Obj.query.get_or_404(record_id)
+    disbursement_number = record.disbursement_number
+    file = request.args.get("file_download")
+    
+    if file:
+        root = Path(current_app.instance_path)
+                    
+        upload_path = root / "uploads"
+        if not upload_path.is_dir():  upload_path.mkdir()
+                    
+        disbursements_path = upload_path / "disbursements"
+        if not disbursements_path.is_dir():  disbursements_path.mkdir()
+                    
+        voucher_path = disbursements_path / disbursement_number
+        if not voucher_path.is_dir():  voucher_path.mkdir()
+    
+        return send_file('{}'.format(file), as_attachment=True)
+    else:
+        flash(f"File not found.", category="error")
+    
+    return redirect(url_for(f'{app_name}.edit', record_id=record_id))
+
+
+@bp.route("/delete_file/<int:record_id>", methods=["POST", "GET"])
+@login_required
+@roles_accepted([ROLES_ACCEPTED])
+def delete_file(record_id):
+    record = Obj.query.get_or_404(record_id)
+    disbursement_number = record.disbursement_number
+    file_path = request.args.get("file_delete")
+    
+    if file_path:
+        file = Path(file_path)
+                    
+        if file.is_file():
+            try:
+                file.unlink()
+                flash(f"{file.name} deleted successfully.", category="success")
+            except Exception as e:
+                flash(f"File does not exists.", category="error")
+    else:
+        flash(f"File does not exists.", category="error")
+    
+    return redirect(url_for(f'{app_name}.edit', record_id=record_id))
 
 
 @bp.route("/print/<int:record_id>", methods=["GET"])
