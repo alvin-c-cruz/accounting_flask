@@ -57,7 +57,12 @@
                 </div>
                 <div class="col-6">
                     <label for="files">Upload files:</label>
-                    <input type="file" id="files" name="files" multiple accept=".pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+                    <input type="file" id="files" name="files" multiple>
+                    {% if form.errors.get("files") %}
+                        {% for error in form.errors.get("files") %}
+                        <p class="text-danger">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>

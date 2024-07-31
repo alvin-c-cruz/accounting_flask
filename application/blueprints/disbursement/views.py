@@ -55,7 +55,7 @@ def add():
     if request.method == "POST":
         form = Form()
         form._post(request.form)
-        form._post_files(request.files)
+        form._post_files(request.files.getlist('files'))
 
         if form._validate_on_submit():
             form.user_prepare_id = current_user.id
@@ -99,6 +99,7 @@ def edit(record_id):
     if request.method == "POST":
         form = Form()
         form._post(request.form)
+        form._post_files(request.files.getlist('files'))
 
         if form._validate_on_submit():
             cmd_button = request.form.get("cmd_button")

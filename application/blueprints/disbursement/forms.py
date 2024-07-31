@@ -5,6 +5,10 @@ from .models import Disbursement as Obj
 from .models import DisbursementDetail as ObjDetail
 from .models import UserDisbursement as Preparer
 from datetime import datetime
+from werkzeug.utils import secure_filename
+from pathlib import Path
+from flask import current_app
+
 from . import app_name
 
 HEADER_INTEGER_FIELDS = ["cash_id", "check_name_id"]
@@ -24,6 +28,7 @@ def get_attributes(object):
         "errors", 
         "active", 
         "details", 
+        "files",
         )
     for i in exceptions:
         try:
@@ -109,6 +114,7 @@ class Form:
 
     details = []
     errors = {}
+    files = []
 
     def __post_init__(self):
         self.details = []
@@ -175,6 +181,27 @@ class Form:
                         db.session.add(row_detail)
                 
         db.session.commit()
+        
+        #  Iterate thru files
+        for file in self.files:
+            if file:
+                filename = secure_filename(file.filename)
+                root = Path(current_app.instance_path)
+                
+                upload_path = root / "uploads"
+                if not upload_path.is_dir():  upload_path.mkdir()
+                
+                disbursements_path = upload_path / "disbursements"
+                if not disbursements_path.is_dir():  disbursements_path.mkdir()
+                
+                voucher_path = disbursements_path / self.disbursement_number
+                if not voucher_path.is_dir():  voucher_path.mkdir()
+
+                file.save(voucher_path / filename)
+            else:
+                if "files" not in self.errors: self.errors["files"] = []
+                self.errors["files"].append(f"{filename} is not a valid file.")
+
    
     def _populate(self, obj):
         for attribute in get_attributes(self):
@@ -184,6 +211,20 @@ class Form:
             subform = SubForm()
             subform._populate(row)
             self.details[i] = (i, subform)
+
+        root = Path(current_app.instance_path)
+                
+        upload_path = root / "uploads"
+        if not upload_path.is_dir():  upload_path.mkdir()
+                
+        disbursements_path = upload_path / "disbursements"
+        if not disbursements_path.is_dir():  disbursements_path.mkdir()
+                
+        voucher_path = disbursements_path / self.disbursement_number
+        if not voucher_path.is_dir():  voucher_path.mkdir()
+
+                    
+        
 
     def _post(self, request_form):
         for attribute in get_attributes(self):
@@ -207,6 +248,13 @@ class Form:
                 else:
                     setattr(self.details[i][1], attribute, request_form.get(f'{attribute}-{i}'))
 
+    def _post_files(self, files):
+        if not files or files[0].filename == '':
+            # No selected files
+            return
+        
+        self.files = files
+    
     def _validate_on_submit(self):
         self.errors = {}
         detail_validation = True
@@ -255,7 +303,7 @@ class Form:
 
         if all_not_dirty:
             self.errors["entry"] = "There should be at least one entry."       
-
+    
         if not self.errors and detail_validation:
             return True        
     
@@ -268,4 +316,3 @@ class Form:
             return True
         else:
             return False
-    
