@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-{% from "macros_simple_form.html" import text_box, float_box, text_area, save_button %}
-
+{% from 'macros.html' import error_message %}
 {% block title %}{{ app_label }}{% endblock %}
 
 {% block content %}
@@ -8,16 +7,33 @@
     {% if form.id %}
     <h1 class="mb-4">Edit {{ app_label }}</h1>
     <form action="{{ url.edit }}" method="post">
-        <input type="number" name="record_id" value="{{ form.id }}" hidden>
         {% else %}
     <h1 class="mb-4">Add {{ app_label }}</h1>
     <form action="{{ url.add }}" method="post">
         {% endif %}
     
-        {{ text_box(form, "Account Classification", "account_classification_name", form.account_classification_name, autofocus=True) }}
-        {{ text_box(form, "Order Priority", "priority", form.priority, autofocus=False) }}
+        {{ form.html_tag.csrf_token }}
+        {{ form.html_tag('id', hidden=True) | safe }}
 
-        {{  save_button() }}
+        <div class="row mb-3">
+            <label for="account_classification_name" class="col-sm-2 col-form-label">Account Classification</label>
+            <div class="col-sm-10">
+                {{ form.html_tag('account_classification_name', css_class="form-control upper-case", placeholder="Enter account classification", required=True, autocomplete=False) | safe }}
+                {{ error_message(form, 'account_classification_name') }}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label for="priority" class="col-sm-2 col-form-label">Order Priority</label>
+            <div class="col-sm-10">
+                {{ form.html_tag('priority', css_class="form-control", required=True, autocomplete=False) | safe }}
+                {{ error_message(form, 'priority') }}
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <input type="submit" class="btn btn-success form-control" value="Save">
+        </div>
 
     </form>
 </div>

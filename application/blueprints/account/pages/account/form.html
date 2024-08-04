@@ -2,15 +2,15 @@
 {% from 'macros.html' import error_message %}
 
 
-{% block title %}Account{% endblock %}
+{% block title %}{{ app_label }}{% endblock %}
 
 {% block content %}
 <div class="container p-5">
     {% if form.id %}
-    <h1 class="mb-4">Edit Account</h1>
+    <h1 class="mb-4">Edit {{ app_label }}</h1>
     <form action="{{ url.edit }}" method="post">
         {% else %}
-    <h1 class="mb-4">Add Account</h1>
+    <h1 class="mb-4">Add {{ app_label }}</h1>
     <form action="{{ url.add }}" method="post">
         {% endif %}
         

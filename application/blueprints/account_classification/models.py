@@ -6,7 +6,6 @@ class AccountClassification(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     account_classification_name = db.Column(db.String(255))
     priority = db.Column(db.Integer())
-
     active = db.Column(db.Boolean())
 
     def __str__(self):

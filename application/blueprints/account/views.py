@@ -56,7 +56,9 @@ def add():
 
     context = {
         "form": form,
-        "url": Url(Obj)
+        "url": Url(Obj),
+        "app_name": app_name,
+        "app_label": app_label,
     }
 
     return render_template(f"{app_name}/form.html", **context)
@@ -96,7 +98,9 @@ def edit(record_id):
 
     context = {
         "form": form,
-        "url": Url(obj)
+        "url": Url(obj),
+        "app_name": app_name,
+        "app_label": app_label,
     }
 
     return render_template(f"{app_name}/form.html", **context)
