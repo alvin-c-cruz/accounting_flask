@@ -10,6 +10,7 @@ from application.blueprints.user import login_required, roles_accepted
 from flask_login import current_user
 
 from . import app_name, app_label
+from .. account_classification import AccountClassification
 
 
 bp = Blueprint(app_name, __name__, template_folder="pages", url_prefix=f"/{app_name}")
@@ -59,6 +60,7 @@ def add():
         "url": Url(Obj),
         "app_name": app_name,
         "app_label": app_label,
+        "account_classification_options": AccountClassification().options()
     }
 
     return render_template(f"{app_name}/form.html", **context)
@@ -101,6 +103,7 @@ def edit(record_id):
         "url": Url(obj),
         "app_name": app_name,
         "app_label": app_label,
+        "account_classification_options": AccountClassification().options()
     }
 
     return render_template(f"{app_name}/form.html", **context)

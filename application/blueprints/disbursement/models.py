@@ -4,7 +4,7 @@ from . import app_name, model_name
 
 class Disbursement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    record_date = db.Column(db.String())
+    record_date = db.Column(db.Date())
 
     cash_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
     cash = db.relationship('Account', backref='disbursements', lazy=True)

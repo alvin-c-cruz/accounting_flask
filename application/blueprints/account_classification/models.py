@@ -12,7 +12,7 @@ class AccountClassification(db.Model):
         return getattr(self, f"{app_name}_name")
     
     def options(self):
-        _options = [{"id": record.id, "dropdown_name": getattr(record, f"{app_name}_name")} for record in self.query.order_by("priority").all() if record.active]
+        _options = [(record.id, getattr(record, f"{app_name}_name")) for record in self.query.order_by("priority").all() if record.active]
         return _options
 
     @property
