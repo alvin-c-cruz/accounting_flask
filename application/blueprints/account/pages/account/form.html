@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% from "macros_simple_form.html" import select_box, text_box, text_area, save_button %}
+{% from 'macros.html' import error_message %}
+
 
 {% block title %}Account{% endblock %}
 
@@ -8,18 +9,33 @@
     {% if form.id %}
     <h1 class="mb-4">Edit Account</h1>
     <form action="{{ url.edit }}" method="post">
-        <input type="number" name="record_id" value="{{ form.id }}" hidden>
         {% else %}
     <h1 class="mb-4">Add Account</h1>
     <form action="{{ url.add }}" method="post">
         {% endif %}
-    
-        {{ text_box(form, "Account Number", "account_number", form.account_number, autofocus=True) }}
-        {{ text_box(form, "Account Title", "account_name", form.account_name, autofocus=False) }}
-        {{ select_box(form, "Account Classification", "account_classification_id", form.account_classification_id, account_classification_options, autofocus=False) }}
+        
+        {{ form.html_tag.csrf_token }}
+        {{ form.html_tag('id', hidden=True) | safe }}
+        
+        <div class="row mb-3">
+            <label for="account_number" class="col-sm-2 col-form-label">Account Number</label>
+            <div class="col-sm-10">
+                {{ form.html_tag('account_number', css_class="form-control upper-case", autofocus=True, placeholder="Enter account number", required=True, autocomplete=False) | safe }}
+                {{ error_message(form, 'account_number') }}
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <label for="account_name" class="col-sm-2 col-form-label">Account Title</label>
+            <div class="col-sm-10">
+                {{ form.html_tag('account_name', css_class="form-control upper-case", placeholder="Enter account title", required=True, autocomplete=False) | safe }}
+                {{ error_message(form, 'account_name') }}
+            </div>
+        </div>
 
-        {{  save_button() }}
-
+        <div class="row mb-3">
+            <input type="submit" class="btn btn-success form-control" value="Save">
+        </div>
     </form>
 </div>
 {% endblock %}

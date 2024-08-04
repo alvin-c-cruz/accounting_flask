@@ -1,0 +1,5 @@
+{% macro error_message(form, field_name) %}
+    {% if form.errors.get(field_name) %}
+    <span class="text-danger">{{ form.errors.get(field_name) }}</span>
+    {% endif %}
+{% endmacro %}

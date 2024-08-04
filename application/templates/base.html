@@ -51,6 +51,31 @@
     </style>
     {% block styles %}
     {% endblock %}
+    <script>
+      // Function to prevent form submission on Enter key press
+      function preventSubmitOnEnter(event) {
+          if (event.key === 'Enter') {
+              event.preventDefault();
+          }
+      }
+      
+      // Attach event listener to inputs after the DOM is loaded
+      document.addEventListener('DOMContentLoaded', function() {
+          // Select all text input elements
+          const textInputs = document.querySelectorAll('input[type="text"]');
+          textInputs.forEach(input => {
+              input.addEventListener('keypress', preventSubmitOnEnter);
+          });
+
+          // Optionally, add a listener to prevent submission by hitting Enter on the form
+          const form = document.querySelector('form');
+          form.addEventListener('keydown', function(event) {
+              if (event.key === 'Enter') {
+                  event.preventDefault();
+              }
+          });
+      });
+    </script>
   </head>
   <body>
     {% include "navbar.html" %}

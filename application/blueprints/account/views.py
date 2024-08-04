@@ -2,12 +2,12 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 import json
 from sqlalchemy.exc import IntegrityError
 from .models import Account as Obj
+from .models import UserAccount as Preparer
 from .models import AdminAccount as Approver
 from .forms import Form
 from application.extensions import db, Url
 from application.blueprints.user import login_required, roles_accepted
 from flask_login import current_user
-from .. account_classification import AccountClassification
 
 from . import app_name, app_label
 
@@ -34,21 +34,29 @@ def home():
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def add():
+    form = Form(Obj)
     if request.method == "POST":
-        form = Form()
-        form._post(request.form)
-        form.user_prepare_id = current_user.id
+        record = Obj()
+        form.post(request, record)
+        record.active = True
 
-        if form._validate_on_submit():
-            form._save()
+        if form.validate_on_submit():
+            db.session.add(record)
+            db.session.commit()
+
+            prepared_dict = {
+                "user_id": current_user.id, 
+                f"{app_name}_id": record.id
+            }
+            prepared_by = Preparer(**prepared_dict)
+            db.session.add(prepared_by)
+            db.session.commit()
+
             return redirect(url_for(f'{app_name}.home'))
-    else:
-        form = Form()
 
     context = {
         "form": form,
-        "url": Url(Obj),
-        "account_classification_options": AccountClassification().options(),
+        "url": Url(Obj)
     }
 
     return render_template(f"{app_name}/form.html", **context)
@@ -58,24 +66,37 @@ def add():
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def edit(record_id):   
+    record = Obj.query.get_or_404(record_id)
+    form = Form(Obj)
+
     if request.method == "POST":
-        form = Form()
-        form._post(request.form)
-        form.user_prepare_id = current_user.id
+        form.post(request, record)
+        record.active = True
 
-        if form._validate_on_submit():
-            form._save()
+        if form.validate_on_submit():
+            # Delete old preparer
+            old_preparer_dict = {
+                f"{app_name}_id": record.id
+            }
+            old_preparer = Preparer.query.filter_by(**old_preparer_dict).first_or_404()
+            db.session.delete(old_preparer)
+
+            # Record new preparer
+            prepared_dict = {
+                "user_id": current_user.id, 
+                f"{app_name}_id": record.id
+            }
+            prepared_by = Preparer(**prepared_dict)
+            db.session.add(prepared_by)
+            db.session.commit()
+
             return redirect(url_for(f'{app_name}.home'))
-
     else:
-        obj = Obj.query.get(record_id)
-        form = Form()
-        form._populate(obj)
+        form.get(record)
 
     context = {
         "form": form,
-        "url": Url(obj),
-        "account_classification_options": AccountClassification().options(),
+        "url": Url(record)
     }
 
     return render_template(f"{app_name}/form.html", **context)
