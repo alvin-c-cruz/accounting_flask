@@ -36,17 +36,17 @@ def home():
 def add():
     form = Form(Obj)
     if request.method == "POST":
-        record = Obj()
-        form.post(request, record)
-        record.active = True
+        obj = Obj()
+        form.post(request, obj)
+        obj.active = True
 
         if form.validate_on_submit():
-            db.session.add(record)
+            db.session.add(obj)
             db.session.commit()
 
             prepared_dict = {
                 "user_id": current_user.id, 
-                f"{app_name}_id": record.id
+                f"{app_name}_id": obj.id
             }
             prepared_by = Preparer(**prepared_dict)
             db.session.add(prepared_by)
@@ -66,17 +66,17 @@ def add():
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def edit(record_id):   
-    record = Obj.query.get_or_404(record_id)
+    obj = Obj.query.get_or_404(record_id)
     form = Form(Obj)
 
     if request.method == "POST":
-        form.post(request, record)
-        record.active = True
+        form.post(request, obj)
+        obj.active = True
 
         if form.validate_on_submit():
             # Delete old preparer
             old_preparer_dict = {
-                f"{app_name}_id": record.id
+                f"{app_name}_id": obj.id
             }
             old_preparer = Preparer.query.filter_by(**old_preparer_dict).first_or_404()
             db.session.delete(old_preparer)
@@ -84,7 +84,7 @@ def edit(record_id):
             # Record new preparer
             prepared_dict = {
                 "user_id": current_user.id, 
-                f"{app_name}_id": record.id
+                f"{app_name}_id": obj.id
             }
             prepared_by = Preparer(**prepared_dict)
             db.session.add(prepared_by)
@@ -92,11 +92,11 @@ def edit(record_id):
 
             return redirect(url_for(f'{app_name}.home'))
     else:
-        form.get(record)
+        form.get(obj)
 
     context = {
         "form": form,
-        "url": Url(record)
+        "url": Url(obj)
     }
 
     return render_template(f"{app_name}/form.html", **context)
